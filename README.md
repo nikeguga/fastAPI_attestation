@@ -18,17 +18,19 @@
    git clone <URL вашего репозитория>
    cd <название директории с проектом>
 2. Создайте и активируйте виртуальное окружение:  
-
-python -m venv venv
-source venv/bin/activate  # Для Windows: venv\Scripts\activate
+   ```bash
+   python -m venv venv
+   source venv/bin/activate  # Для Windows: venv\Scripts\activate
 
 3. Установите зависимости:  
-
-pip install -r requirements.txt
+   ```bash
+   pip install -r requirements.txt
   
 ## Запуск  
 Для запуска приложения используйте команду:  
-uvicorn main:app --reload
+  
+uvicorn main:app --reload  
+  
 Приложение будет доступно по адресу http://127.0.0.1:8000.
 
 ## Использование
