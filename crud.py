@@ -1,4 +1,5 @@
-from sqlalchemy.orm import Session
+from sqlalchemy.ext.asyncio import AsyncSession
+from sqlalchemy.future import select
 from models import User, Product, Order
 from schemas import UserCreate, ProductCreate, OrderCreate
 from passlib.context import CryptContext
@@ -6,23 +7,17 @@ from passlib.context import CryptContext
 # Настройка контекста для хеширования паролей
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 
-def get_password_hash(password: str):
-    """
-    Возвращает хеш пароля.
-    """
+# Хеширование пароля
+async def get_password_hash(password: str):
     return pwd_context.hash(password)
 
-def verify_password(plain_password: str, hashed_password: str):
-    """
-    Проверяет, соответствует ли введенный пароль хешу.
-    """
+# Проверка пароля с использованием хеша
+async def verify_password(plain_password: str, hashed_password: str):
     return pwd_context.verify(plain_password, hashed_password)
 
-def create_user(db: Session, user: UserCreate):
-    """
-    Создает нового пользователя в базе данных.
-    """
-    hashed_password = get_password_hash(user.password)
+# Создание нового пользователя в базе данных
+async def create_user(db: AsyncSession, user: UserCreate):
+    hashed_password = await get_password_hash(user.password)
     db_user = User(
         first_name=user.first_name,
         last_name=user.last_name,
@@ -30,58 +25,50 @@ def create_user(db: Session, user: UserCreate):
         hashed_password=hashed_password
     )
     db.add(db_user)
-    db.commit()
-    db.refresh(db_user)
+    await db.commit()
+    await db.refresh(db_user)
     return db_user
 
-def get_user(db: Session, user_id: int):
-    """
-    Возвращает пользователя по его ID.
-    """
-    return db.query(User).filter(User.id == user_id).first()
+# Получение пользователя по ID
+async def get_user(db: AsyncSession, user_id: int):
+    result = await db.execute(select(User).filter(User.id == user_id))
+    return result.scalars().first()
 
-def get_user_by_email(db: Session, email: str):
-    """
-    Возвращает пользователя по его email.
-    """
-    return db.query(User).filter(User.email == email).first()
+# Получение пользователя по email
+async def get_user_by_email(db: AsyncSession, email: str):
+    result = await db.execute(select(User).filter(User.email == email))
+    return result.scalars().first()
 
-def create_product(db: Session, product: ProductCreate):
-    """
-    Создает новый товар в базе данных.
-    """
+# Создание нового товара в базе данных
+async def create_product(db: AsyncSession, product: ProductCreate):
     db_product = Product(
         name=product.name,
         description=product.description,
         price=product.price
     )
     db.add(db_product)
-    db.commit()
-    db.refresh(db_product)
+    await db.commit()
+    await db.refresh(db_product)
     return db_product
 
-def get_product(db: Session, product_id: int):
-    """
-    Возвращает товар по его ID.
-    """
-    return db.query(Product).filter(Product.id == product_id).first()
+# Получение товара по ID
+async def get_product(db: AsyncSession, product_id: int):
+    result = await db.execute(select(Product).filter(Product.id == product_id))
+    return result.scalars().first()
 
-def create_order(db: Session, order: OrderCreate):
-    """
-    Создает новый заказ в базе данных.
-    """
+# Создание нового заказа в базе данных
+async def create_order(db: AsyncSession, order: OrderCreate):
     db_order = Order(
         user_id=order.user_id,
         product_id=order.product_id,
         status=order.status
     )
     db.add(db_order)
-    db.commit()
-    db.refresh(db_order)
+    await db.commit()
+    await db.refresh(db_order)
     return db_order
 
-def get_order(db: Session, order_id: int):
-    """
-    Возвращает заказ по его ID.
-    """
-    return db.query(Order).filter(Order.id == order_id).first()
+# Получение заказа по ID
+async def get_order(db: AsyncSession, order_id: int):
+    result = await db.execute(select(Order).filter(Order.id == order_id))
+    return result.scalars().first()

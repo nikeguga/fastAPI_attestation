@@ -1,46 +1,54 @@
-from pydantic import BaseModel
+from pydantic import BaseModel, EmailStr
 from datetime import datetime
 
-class UserCreate(BaseModel):
+# Базовая модель пользователя
+class UserBase(BaseModel):
     first_name: str
     last_name: str
-    email: str
-    password: str
+    email: EmailStr
 
-class UserResponse(BaseModel):
+# Модель для создания нового пользователя
+class UserCreate(UserBase):
+    password: str  # Пароль в открытом виде, будет хеширован перед сохранением
+
+# Модель для возврата информации о пользователе
+class UserResponse(UserBase):
     id: int
-    first_name: str
-    last_name: str
-    email: str
 
     class Config:
-        orm_mode = True
+        orm_mode = True  # Включение поддержки ORM для преобразования данных
 
-class ProductCreate(BaseModel):
+# Базовая модель товара
+class ProductBase(BaseModel):
     name: str
     description: str
     price: float
 
-class ProductResponse(BaseModel):
+# Модель для создания нового товара
+class ProductCreate(ProductBase):
+    pass
+
+# Модель для возврата информации о товаре
+class ProductResponse(ProductBase):
     id: int
-    name: str
-    description: str
-    price: float
 
     class Config:
         orm_mode = True
 
-class OrderCreate(BaseModel):
+# Базовая модель заказа
+class OrderBase(BaseModel):
     user_id: int
     product_id: int
     status: str
 
-class OrderResponse(BaseModel):
+# Модель для создания нового заказа
+class OrderCreate(OrderBase):
+    pass
+
+# Модель для возврата информации о заказе
+class OrderResponse(OrderBase):
     id: int
-    user_id: int
-    product_id: int
     date_ordered: datetime
-    status: str
 
     class Config:
         orm_mode = True
