@@ -6,6 +6,9 @@ import datetime
 Base = declarative_base()
 
 class User(Base):
+    """
+    Модель пользователя, содержит основную информацию о пользователе.
+    """
     __tablename__ = "users"
     id = Column(Integer, primary_key=True, index=True)
     first_name = Column(String, index=True)
@@ -14,6 +17,9 @@ class User(Base):
     hashed_password = Column(String)
 
 class Product(Base):
+    """
+    Модель товара, содержит информацию о товаре, его описание и цену.
+    """
     __tablename__ = "products"
     id = Column(Integer, primary_key=True, index=True)
     name = Column(String, index=True)
@@ -21,6 +27,9 @@ class Product(Base):
     price = Column(Float)
 
 class Order(Base):
+    """
+    Модель заказа, связывает пользователя и товар, содержит дату и статус заказа.
+    """
     __tablename__ = "orders"
     id = Column(Integer, primary_key=True, index=True)
     user_id = Column(Integer, ForeignKey("users.id"))
